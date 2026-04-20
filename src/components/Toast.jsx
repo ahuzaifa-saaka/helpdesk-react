@@ -14,7 +14,7 @@ export default function Toast() {
       closeOnClick
       pauseOnHover
       draggable
-      theme="dark"
+      theme="light"
     />
   );
 }
