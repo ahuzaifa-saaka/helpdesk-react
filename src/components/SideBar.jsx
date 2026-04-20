@@ -43,12 +43,6 @@ export default function SideBar({activePage, onNavigate, isOpen}) {
           </span>
           <span style={{fontSize: 11, color: "var(--text-muted)"}}>
             {users.length} users online{" "}
-            <span
-              style={{fontSize: "15px", cursor: "pointer"}}
-              onClick={() => toggleTheme()}
-            >
-              {theme === "light" ? "🌙" : "☀️"}
-            </span>
           </span>
         </div>
       </div>

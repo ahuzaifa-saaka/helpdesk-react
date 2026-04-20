@@ -1,7 +1,7 @@
 import styles from "./Chart.module.css";
-const R = 44,
+const radius = 44,
   STROKE = 9,
-  C = 2 * Math.PI * R;
+  C = 2 * Math.PI * radius;
 
 export default function Chart({count, total, color, label}) {
   const pct = total === 0 ? 0 : Math.round((count / total) * 100);
@@ -9,11 +9,11 @@ export default function Chart({count, total, color, label}) {
 
   return (
     <div className={styles.donutWrap}>
-      <svg width="120" height="120" viewBox="0 0 110 110" overflow="visible">
+      <svg width="150" height="150" viewBox="0 0 110 110" overflow="visible">
         <circle
           cx="55"
           cy="55"
-          r={R}
+          r={radius}
           fill="none"
           stroke="var(--border)"
           strokeWidth={STROKE}
@@ -21,7 +21,7 @@ export default function Chart({count, total, color, label}) {
         <circle
           cx="55"
           cy="55"
-          r={R}
+          r={radius}
           fill="none"
           stroke={color}
           strokeWidth={STROKE}

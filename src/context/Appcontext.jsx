@@ -267,9 +267,10 @@ export function AppProvider({children}) {
       showToast("Ticket updated.", "success");
     } else {
       // CREATE
-      const ticketNumber = getNextTicketNumber();
+      // const ticketNumber = getNextTicketNumber();
       const newTicket = {
-        ticketId: formatTicketId(ticketNumber),
+        // ticketId: formatTicketId(ticketNumber),
+        ticketId: Date.now(),
         ...formData,
         status: "open",
         createdAt: new Date().toLocaleDateString(),
