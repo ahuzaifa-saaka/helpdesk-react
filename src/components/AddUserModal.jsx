@@ -1,5 +1,6 @@
 import {useForm} from "react-hook-form";
 import {useEffect} from "react";
+import {createPortal} from "react-dom";
 
 const roles = [
   "Frontend Developer",
@@ -35,7 +36,7 @@ export default function AddUserModal({onClose, isOpen, onSubmit}) {
     reset();
   }
   if (!isOpen) return null;
-  return (
+  return createPortal(
     <div
       className="popUp active"
       id="addUserModal"
@@ -98,6 +99,7 @@ export default function AddUserModal({onClose, isOpen, onSubmit}) {
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

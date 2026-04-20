@@ -15,9 +15,9 @@ export default function TicketDetailModal({
   const userName = getUserName(ticket.assignedTo);
   const comments = ticket.comments || [];
 
-  function canTransition(next) {
-    return (TRANSITIONS[ticket.status] || []).includes(next);
-  }
+  // function canTransition(next) {
+  //   return (TRANSITIONS[ticket.status] || []).includes(next);
+  // }
 
   return (
     <div
@@ -145,7 +145,10 @@ export default function TicketDetailModal({
             </div>
 
             {/* Comments */}
-            <div className="comments-section" style={{overflow: "auto"}}>
+            <div
+              className="comments-section"
+              style={{height: "8rem", overflow: "auto"}}
+            >
               <div className="comment-label">Comments {comments.length}</div>
               {comments.length ? (
                 comments.map((comment, i) => (

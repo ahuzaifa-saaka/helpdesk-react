@@ -60,15 +60,8 @@ export default function StatusDashboard({
   return (
     <div className="status-dashboard">
       {cards.map((card) => (
-        <div
-          key={card.filter}
-          className={`status-card${activeFilter === card.filter && card.filter !== "" ? " active" : ""}`}
-          data-filter={card.filter}
-          onClick={() => onFilterClick(card.filter)}
-        >
-          <h4 id={card.filter || "t-tickets"} style={card.labelStyle}>
-            {card.label}
-          </h4>
+        <div key={card.filter} className="status-card">
+          <h4 style={card.labelStyle}>{card.label}</h4>
           <p id={card.countId}>{card.count}</p>
         </div>
       ))}

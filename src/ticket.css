@@ -96,62 +96,6 @@ body {
 }
 
 /* Header */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 22px 32px;
-  margin-bottom: 18px;
-  background: linear-gradient(135deg, #0d1528 0%, #111827 100%);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  position: relative;
-  overflow: hidden;
-  animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(79, 110, 247, 0.06),
-    transparent
-  );
-  animation: shimmer 4s infinite;
-}
-
-.header::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.header-text {
-  font-family: "Syne", sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: 14px;
-  background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
 
 .dashboard-text {
   animation: fadeUp 0.5s 0.1s both;
@@ -605,7 +549,7 @@ body {
   display: none;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9000;
 }
 
 .popUp.active,
@@ -1231,13 +1175,6 @@ body {
   }
 }
 
-.button-toggle {
-  cursor: pointer;
-  font-size: 18px;
-  position: absolute;
-  right: 32px;
-}
-
 /* .toast {
   position: fixed;
   top: 20px;
@@ -1417,25 +1354,6 @@ body {
   background: rgba(0, 0, 0, 0.5);
   z-index: 4;
   backdrop-filter: blur(1px);
-}
-
-.sidebar-menu-btn {
-  display: none;
-  background: transparent;
-  border: none;
-  color: rgb(220, 217, 217);
-  cursor: pointer;
-  padding: 4px;
-  font-weight: 800;
-  margin-right: 30px;
-}
-
-.sidebar-menu-btn .material-icons {
-  font-size: 22px;
-}
-
-.sidebar-menu-btn:hover {
-  color: var(--accent);
 }
 
 /* Three dot dropdowm */

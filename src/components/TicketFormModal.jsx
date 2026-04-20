@@ -1,4 +1,5 @@
 import {useEffect} from "react";
+import {createPortal} from "react-dom";
 import {useForm} from "react-hook-form";
 
 // const EMPTY_FORM = {
@@ -75,7 +76,7 @@ export default function TicketFormModal({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
       className="popUp active"
       id="popupForm"
@@ -161,7 +162,9 @@ export default function TicketFormModal({
           <textarea
             id="description"
             placeholder="Describe the issue…"
-            {...register("description", {required: "description is required"})}
+            {...register("description", {
+              required: "description is required",
+            })}
             className={errors.description ? "input-error" : "input"}
           />
 
@@ -170,6 +173,7 @@ export default function TicketFormModal({
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

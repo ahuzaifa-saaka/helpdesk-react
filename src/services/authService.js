@@ -25,7 +25,7 @@ export async function signUpWithEmail(name, email, password) {
     name,
     email,
     photo: null,
-    role: "agent",
+    role: "user",
   };
 
   await setDoc(doc(db, "users", result.user.uid), userData);
@@ -43,7 +43,7 @@ export async function loginWithGoogle() {
       name: result.user.displayName,
       email: result.user.email,
       photo: result.user.photoURL,
-      role: "agent",
+      role: "user",
     };
     await setDoc(userRef, userData);
     return userData;
@@ -69,6 +69,6 @@ async function getUserData(firebaseUser) {
     name: firebaseUser.displayName,
     email: firebaseUser.email,
     photo: firebaseUser.photoURL,
-    role: "agent",
+    role: "user",
   };
 }
