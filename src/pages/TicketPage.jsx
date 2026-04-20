@@ -8,7 +8,7 @@ import TicketDetailModal from "../components/TicketDetailModal";
 import AssignModal from "../components/AssignModal";
 import CommentModal from "../components/CommentModal";
 import DeleteModal from "../components/DeleteModal";
-function Dashboard() {
+function TicketPage() {
   const {
     theme,
     toggleTheme,
@@ -83,7 +83,7 @@ function Dashboard() {
     <div>
       <>
         <div className="dashboard-text">
-          <h3>Dashboard</h3>
+          <h3>Ticket</h3>
         </div>
         <SearchBar
           searchValue={searchValue}
@@ -103,11 +103,6 @@ function Dashboard() {
           }}
         />
 
-        <StatusDashboard
-          tickets={filtered}
-          activeFilter={activeFilter}
-          onFilterClick={handleStatusCardClick}
-        />
         <TicketTable
           tickets={paginated}
           getUserName={getUserName}
@@ -193,4 +188,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default TicketPage;

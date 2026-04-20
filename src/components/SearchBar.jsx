@@ -54,7 +54,7 @@ export default function SearchBar({
           </select>
         </div>
 
-        <div className="filter">
+        {/* <div className="filter">
           <select
             id="filterByAssignee"
             value={filterAssignee}
@@ -67,7 +67,7 @@ export default function SearchBar({
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         <button
           type="button"

@@ -16,4 +16,4 @@ export const TRANSITIONS = {
   closed: [],
 };
 
-export const TICKET_PER_PAGE = 4;
+export const TICKET_PER_PAGE = 7;

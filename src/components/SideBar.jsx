@@ -1,11 +1,12 @@
 import {useGlobal} from "../context/Appcontext";
 const nav_item = [
   {id: "dashboard", icon: "dashboard", label: "Dashboard"},
+  {id: "ticket", icon: "support_agent", label: "Ticket"},
   {id: "users", icon: "group", label: "Users"},
 ];
 
 export default function SideBar({activePage, onNavigate, isOpen}) {
-  const {users, ticketItems} = useGlobal();
+  const {users, ticketItems, theme, toggleTheme} = useGlobal();
   const totalCount = ticketItems.length;
 
   return (
@@ -25,7 +26,7 @@ export default function SideBar({activePage, onNavigate, isOpen}) {
           >
             <span className="material-icons sidebar-nav-icon">{item.icon}</span>
             <span className="sidebar-nav-label">{item.label}</span>
-            {item.id === "dashboard" && totalCount > 0 && (
+            {item.id === "ticket" && totalCount > 0 && (
               <span className="sidebar-badge">{totalCount}</span>
             )}
           </button>
@@ -41,7 +42,13 @@ export default function SideBar({activePage, onNavigate, isOpen}) {
             circle
           </span>
           <span style={{fontSize: 11, color: "var(--text-muted)"}}>
-            {users.length} users online
+            {users.length} users online{" "}
+            <span
+              style={{fontSize: "15px", cursor: "pointer"}}
+              onClick={() => toggleTheme()}
+            >
+              {theme === "light" ? "🌙" : "☀️"}
+            </span>
           </span>
         </div>
       </div>

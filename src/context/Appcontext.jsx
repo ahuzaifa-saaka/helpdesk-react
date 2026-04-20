@@ -3,12 +3,25 @@ import {formatStatus} from "../utils";
 import {USERS, TICKET_PER_PAGE, TRANSITIONS} from "../constants";
 import {showToast} from "../components/Toast";
 import {useLocalStorageState} from "../hooks/useLocalStorageState";
+import {Oval} from "react-loader-spinner";
+
+import {onAuthStateChanged} from "firebase/auth";
+import {doc, getDoc} from "firebase/firestore";
+import {auth, db} from "../firebase";
+import {
+  loginWithGoogle,
+  loginWithEmail,
+  signUpWithEmail,
+  logoutUser,
+} from "../services/authService";
 
 const AppContext = createContext();
 
 export const useGlobal = () => useContext(AppContext);
 
 export function AppProvider({children}) {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
   //  Modal states
   const [formOpen, setFormOpen] = useState(false);
   const [editTicket, setEditTicket] = useState(null);
@@ -44,6 +57,29 @@ export function AppProvider({children}) {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const userSnap = await getDoc(doc(db, "users", firebaseUser.uid));
+        if (userSnap.exists()) {
+          setCurrentUser({uid: firebaseUser.uid, ...userSnap.data()});
+        } else {
+          setCurrentUser({
+            uid: firebaseUser.uid,
+            name: firebaseUser.displayName,
+            email: firebaseUser.email,
+            photo: firebaseUser.photoURL,
+            role: "agent",
+          });
+        }
+      } else {
+        setCurrentUser(null);
+      }
+      setAuthLoading(false);
+    });
+    return unsub;
+  }, []);
+
   function toggleTheme() {
     setTheme((t) => (t === "light" ? "dark" : "light"));
   }
@@ -57,6 +93,29 @@ export function AppProvider({children}) {
   const [users, setUser] = useState(
     () => JSON.parse(localStorage.getItem("users")) || USERS,
   );
+
+  async function handleGoogleLogin() {
+    const user = await loginWithGoogle();
+    setCurrentUser(user);
+    return user;
+  }
+
+  async function handleEmailLogin(email, password) {
+    const user = await loginWithEmail(email, password);
+    setCurrentUser(user);
+    return user;
+  }
+
+  async function handleEmailSignUp(name, email, password) {
+    const user = await signUpWithEmail(name, email, password);
+    setCurrentUser(user);
+    return user;
+  }
+
+  async function handleLogout() {
+    await logoutUser();
+    setCurrentUser(null);
+  }
 
   function saveTickets(updated) {
     setTicketItems(updated);
@@ -287,6 +346,30 @@ export function AppProvider({children}) {
     if (!userId) return null;
     return users.find((user) => user.id === userId)?.name ?? userId;
   }
+
+  if (authLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          background: "var(--bg)",
+        }}
+      >
+        <Oval
+          height={60}
+          width={60}
+          color="#4f6ef7"
+          secondaryColor="#7c3aed"
+          strokeWidth={3}
+          strokeWidthSecondary={3}
+          visible={true}
+        />
+      </div>
+    );
+  }
   return (
     <AppContext.Provider
       value={{
@@ -359,6 +442,14 @@ export function AppProvider({children}) {
         setPendingAssignId,
         setPendingCommentId,
         setPendingDeleteId,
+
+        currentUser,
+        isLoggedIn: !!currentUser,
+        isAdmin: currentUser?.role === "admin",
+        handleGoogleLogin,
+        handleEmailLogin,
+        handleEmailSignUp,
+        handleLogout,
       }}
     >
       {children}

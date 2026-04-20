@@ -7,7 +7,7 @@ export default function Pagination({currentPage, totalPages, onPrev, onNext}) {
         <span className="material-icons">chevron_left</span>
       </button>
       <span className="page-info">
-        Pagee{currentPage} of {totalPages}
+        Page {currentPage} of {totalPages}
       </span>
       <button onClick={onNext} disabled={currentPage === totalPages}>
         <span className="material-icons">chevron_right</span>

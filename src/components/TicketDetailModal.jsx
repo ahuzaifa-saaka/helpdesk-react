@@ -145,7 +145,7 @@ export default function TicketDetailModal({
             </div>
 
             {/* Comments */}
-            <div className="comments-section">
+            <div className="comments-section" style={{overflow: "auto"}}>
               <div className="comment-label">Comments {comments.length}</div>
               {comments.length ? (
                 comments.map((comment, i) => (
