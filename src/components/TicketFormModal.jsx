@@ -1,13 +1,7 @@
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
-
-// const EMPTY_FORM = {
-//   title: "",
-//   priority: "",
-//   status: "open",
-//   email: "",
-//   description: "",
-// };
+import {useGlobal} from "../context/Appcontext";
+import Spinner from "./Spinner";
 
 export default function TicketFormModal({
   isOpen,
@@ -15,8 +9,9 @@ export default function TicketFormModal({
   onSubmit,
   editTicket,
 }) {
-  // const [form, setForm] = useState(EMPTY_FORM);
+  const {authLoading} = useGlobal();
   const isEdit = !!editTicket;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -53,27 +48,48 @@ export default function TicketFormModal({
     }
   }, [editTicket, isOpen, reset]);
 
-  // function handleChange(e) {
-  //   setForm((prev) => ({...prev, [e.target.id]: e.target.value}));
-  // }
-
-  // function handleSubmit(e) {
-  //   e.preventDefault();
-  //   onSubmit(form);
-  //   setForm(EMPTY_FORM);
-  // }
-
-  function onValid(data) {
-    onSubmit(data);
-    reset();
+  async function onValid(data) {
+    setIsSubmitting(true);
+    try {
+      await onSubmit(data);
+    } finally {
+      setIsSubmitting(false);
+      reset();
+    }
   }
 
   function handleClose() {
+    if (isSubmitting) return;
     reset();
     onClose();
   }
 
   if (!isOpen) return null;
+
+  if (authLoading) return <Spinner />;
+
+  if (isSubmitting) {
+    return (
+      <div className="popUp active">
+        <div
+          className="form-card"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: 300,
+            gap: 16,
+          }}
+        >
+          <Spinner size="small" />
+          <p style={{color: "var(--text-muted)", fontSize: 14}}>
+            {isEdit ? "Updating ticket…" : "Creating ticket…"}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -105,7 +121,6 @@ export default function TicketFormModal({
             placeholder="Enter ticket title"
             {...register("title", {required: true})}
             className={errors.title ? "input-error" : "input"}
-            // onChange={handleChange}
           />
 
           <label htmlFor="priority">

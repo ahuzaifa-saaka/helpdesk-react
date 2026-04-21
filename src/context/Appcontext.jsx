@@ -17,7 +17,6 @@ import {
   deleteDoc,
   query,
   orderBy,
-  setDoc,
 } from "firebase/firestore";
 import {auth, db} from "../firebase";
 import {
@@ -267,10 +266,10 @@ export function AppProvider({children}) {
       showToast("Ticket updated.", "success");
     } else {
       // CREATE
-      // const ticketNumber = getNextTicketNumber();
+      const ticketNumber = getNextTicketNumber();
       const newTicket = {
-        // ticketId: formatTicketId(ticketNumber),
-        ticketId: Date.now(),
+        ticketId: formatTicketId(ticketNumber),
+        // ticketId: Date.now(),
         ...formData,
         status: "open",
         createdAt: new Date().toLocaleDateString(),
@@ -510,29 +509,6 @@ export function AppProvider({children}) {
     return users.find((user) => user.id === userId)?.name ?? userId;
   }
 
-  if (authLoading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          background: "var(--bg)",
-        }}
-      >
-        <Oval
-          height={60}
-          width={60}
-          color="#4f6ef7"
-          secondaryColor="#7c3aed"
-          strokeWidth={3}
-          strokeWidthSecondary={3}
-          visible={true}
-        />
-      </div>
-    );
-  }
   return (
     <AppContext.Provider
       value={{
@@ -613,6 +589,7 @@ export function AppProvider({children}) {
         handleEmailLogin,
         handleEmailSignUp,
         handleLogout,
+        authLoading,
       }}
     >
       {children}

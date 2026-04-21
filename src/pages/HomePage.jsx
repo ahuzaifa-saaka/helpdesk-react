@@ -8,9 +8,9 @@ export default function HomePage() {
   const {isLoggedIn, authLoading} = useGlobal();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!authLoading && isLoggedIn) navigate("/ticket", {replace: true});
-  }, [isLoggedIn, authLoading, navigate]);
+  //   useEffect(() => {
+  //     if (!authLoading && isLoggedIn) navigate("/ticket", {replace: true});
+  //   }, [isLoggedIn, authLoading, navigate]);
 
   if (authLoading) {
     return (

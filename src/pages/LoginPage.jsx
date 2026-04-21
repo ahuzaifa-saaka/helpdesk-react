@@ -2,9 +2,11 @@ import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useGlobal} from "../context/Appcontext";
 import styles from "./LoginPage.module.css";
+import Spinner from "../components/Spinner";
 
 export default function LoginPage() {
-  const {handleGoogleLogin, handleEmailLogin, handleEmailSignUp} = useGlobal();
+  const {handleGoogleLogin, handleEmailLogin, handleEmailSignUp, authLoading} =
+    useGlobal();
   const navigate = useNavigate();
 
   const [tab, setTab] = useState("signin");
@@ -85,6 +87,11 @@ export default function LoginPage() {
     };
     return map[code] || "Something went wrong. Please try again.";
   }
+
+  if (authLoading) {
+    <Spinner />;
+  }
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.overlay} />
