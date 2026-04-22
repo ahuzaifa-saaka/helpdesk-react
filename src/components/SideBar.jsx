@@ -1,4 +1,4 @@
-import {useGlobal} from "../context/Appcontext";
+import {useGlobal} from "../context/AppContext";
 const nav_item = [
   {id: "dashboard", icon: "dashboard", label: "Dashboard"},
   {id: "ticket", icon: "support_agent", label: "Ticket"},

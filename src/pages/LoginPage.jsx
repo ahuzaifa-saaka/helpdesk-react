@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {useGlobal} from "../context/Appcontext";
+import {useGlobal} from "../context/AppContext";
 import styles from "./LoginPage.module.css";
 import Spinner from "../components/Spinner";
 
@@ -179,7 +179,7 @@ export default function LoginPage() {
                 className={styles.submitBtn}
                 disabled={loading}
               >
-                {loading ? "Signing in…" : "Sign In"}
+                {loading ? <Spinner /> : "Sign In"}
               </button>
             </form>
           )}
@@ -232,7 +232,7 @@ export default function LoginPage() {
                 className={styles.submitBtn}
                 disabled={loading}
               >
-                {loading ? "Creating account…" : "Create Account"}
+                {loading ? <Spinner /> : "Create Account"}
               </button>
             </form>
           )}

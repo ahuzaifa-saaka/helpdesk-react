@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {useGlobal} from "../context/Appcontext";
+import {useGlobal} from "../context/AppContext";
 import styles from "./HomePage.module.css";
 import {Oval} from "react-loader-spinner";
 

@@ -1,5 +1,5 @@
 import {Outlet, useNavigate, useLocation} from "react-router-dom";
-import {useGlobal} from "../context/Appcontext";
+import {useGlobal} from "../context/AppContext";
 import SideBar from "./SideBar";
 import Header from "./Header";
 import Toast from "./Toast";

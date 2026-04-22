@@ -1,20 +1,19 @@
 import {Oval} from "react-loader-spinner";
 
-function Spinner() {
+function Spinner({height = 80, width = 80}) {
   return (
     <div
       style={{
+        background: "transparent",
         display: "flex",
-        justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
-        background: "var(--bg)",
+        justifyContent: "center",
       }}
     >
       <Oval
-        height={60}
-        width={60}
-        color="#4f6ef7"
+        height={20}
+        width={20}
+        color="#fff"
         secondaryColor="#7c3aed"
         strokeWidth={3}
         strokeWidthSecondary={3}

@@ -1,4 +1,4 @@
-import {useGlobal} from "../context/Appcontext";
+import {useGlobal} from "../context/AppContext";
 import StatusDashboard from "../components/StatusDashboard";
 import PriorityDashboard from "../components/PriorityDashboard";
 

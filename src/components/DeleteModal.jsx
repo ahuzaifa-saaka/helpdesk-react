@@ -4,7 +4,7 @@ export default function DeleteModal({isOpen, ticket, onClose, onConfirm}) {
   const [inputId, setInputId] = useState("");
 
   function handleConfirm() {
-    onConfirm(Number(inputId));
+    onConfirm(inputId);
     setInputId("");
   }
 
@@ -26,8 +26,8 @@ export default function DeleteModal({isOpen, ticket, onClose, onConfirm}) {
       <div className="deleteCard">
         <h3>Confirm Delete</h3>
         <p id="delete-text">
-          Confirm deletion of '{ticket.title}' (ID: {ticket.id}). This action
-          cannot be undone.
+          Confirm deletion of '{ticket.title}' (ID: {ticket.ticketId}). This
+          action cannot be undone.
         </p>
         <input
           type="text"

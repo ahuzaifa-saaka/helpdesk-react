@@ -1,6 +1,6 @@
 import {getUserName, formatStatus} from "../utils";
 import {TRANSITIONS} from "../constants";
-import {useGlobal} from "../context/Appcontext";
+import {useGlobal} from "../context/AppContext";
 
 export default function TicketDetailModal({
   isOpen,

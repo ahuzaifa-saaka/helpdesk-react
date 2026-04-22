@@ -1,4 +1,4 @@
-import {useGlobal} from "../context/Appcontext";
+import {useGlobal} from "../context/AppContext";
 
 export default function SearchBar({
   searchValue,

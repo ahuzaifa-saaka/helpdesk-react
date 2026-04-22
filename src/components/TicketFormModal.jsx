@@ -1,6 +1,5 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {useForm} from "react-hook-form";
-import {useGlobal} from "../context/Appcontext";
 import Spinner from "./Spinner";
 
 export default function TicketFormModal({
@@ -9,15 +8,15 @@ export default function TicketFormModal({
   onSubmit,
   editTicket,
 }) {
-  const {authLoading} = useGlobal();
+  // const {authLoading} = useGlobal();
   const isEdit = !!editTicket;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: {errors},
+    formState: {errors, isSubmitting},
   } = useForm({
     defaultValues: {
       title: "",
@@ -49,47 +48,16 @@ export default function TicketFormModal({
   }, [editTicket, isOpen, reset]);
 
   async function onValid(data) {
-    setIsSubmitting(true);
-    try {
-      await onSubmit(data);
-    } finally {
-      setIsSubmitting(false);
-      reset();
-    }
+    await onSubmit(data);
+    reset();
   }
 
   function handleClose() {
-    if (isSubmitting) return;
     reset();
     onClose();
   }
 
   if (!isOpen) return null;
-
-  if (authLoading) return <Spinner />;
-
-  if (isSubmitting) {
-    return (
-      <div className="popUp active">
-        <div
-          className="form-card"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: 300,
-            gap: 16,
-          }}
-        >
-          <Spinner size="small" />
-          <p style={{color: "var(--text-muted)", fontSize: 14}}>
-            {isEdit ? "Updating ticket…" : "Creating ticket…"}
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -180,8 +148,19 @@ export default function TicketFormModal({
             className={errors.description ? "input-error" : "input"}
           />
 
-          <button type="submit" className="submit-button" id="update-btn">
-            {isEdit ? "Update Ticket" : "Create Ticket"}
+          <button
+            type="submit"
+            className="submit-button"
+            id="update-btn"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <Spinner width={20} height={20} />
+            ) : isEdit ? (
+              "Update Ticket"
+            ) : (
+              "Create Ticket"
+            )}
           </button>
         </form>
       </div>

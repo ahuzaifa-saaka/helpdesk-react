@@ -1,4 +1,4 @@
-import {useGlobal} from "../context/Appcontext";
+import {useGlobal} from "../context/AppContext";
 import {useNavigate} from "react-router-dom";
 import {useState, useRef, useEffect} from "react";
 import styles from "./Header.module.css";

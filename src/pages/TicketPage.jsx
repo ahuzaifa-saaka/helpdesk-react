@@ -1,4 +1,4 @@
-import {useGlobal} from "../context/Appcontext";
+import {useGlobal} from "../context/AppContext";
 import SearchBar from "../components/SearchBar";
 import StatusDashboard from "../components/StatusDashboard";
 import TicketTable from "../components/TicketTable";

@@ -1,6 +1,6 @@
 import {formatStatus} from "../utils";
 import AddUserModal from "../components/AddUserModal";
-import {useGlobal} from "../context/Appcontext";
+import {useGlobal} from "../context/AppContext";
 
 export default function UsersPage() {
   const {users, ticketItems, addUserOpen, setAddUserOpen, handleAddUser} =

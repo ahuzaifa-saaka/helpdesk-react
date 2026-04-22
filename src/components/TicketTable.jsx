@@ -1,4 +1,8 @@
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 import TicketRow from "./TicketRow";
+import {useGlobal} from "../context/AppContext";
 
 export default function TicketTable({
   tickets,
@@ -8,6 +12,7 @@ export default function TicketTable({
   onDelete,
   onAssign,
 }) {
+  const {authLoading} = useGlobal();
   return (
     <div className="description">
       <table className="ticket-table">
@@ -34,7 +39,21 @@ export default function TicketTable({
                   fontSize: 14,
                 }}
               >
-                No tickets found.
+                {authLoading ? (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(3, 1fr)",
+                      gap: "10px",
+                    }}
+                  >
+                    <Skeleton height={12} count={10} />
+                    <Skeleton height={12} count={10} />
+                    <Skeleton height={12} count={10} />
+                  </div>
+                ) : (
+                  "No tickets found."
+                )}
               </td>
             </tr>
           ) : (

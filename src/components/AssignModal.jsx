@@ -96,7 +96,7 @@
 // }
 
 import {useState, useEffect} from "react";
-import {useGlobal} from "../context/Appcontext";
+import {useGlobal} from "../context/AppContext";
 
 export default function AssignModal({
   isOpen,

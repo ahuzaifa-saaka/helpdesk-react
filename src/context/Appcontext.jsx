@@ -5,6 +5,9 @@ import {showToast} from "../components/Toast";
 import {useLocalStorageState} from "../hooks/useLocalStorageState";
 import {Oval} from "react-loader-spinner";
 
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 import {onAuthStateChanged} from "firebase/auth";
 // import {doc, getDoc} from "firebase/firestore";
 import {
@@ -25,10 +28,16 @@ import {
   signUpWithEmail,
   logoutUser,
 } from "../services/authService";
+import Spinner from "../components/Spinner";
 
 const AppContext = createContext();
 
 export const useGlobal = () => useContext(AppContext);
+
+// function useGlobal (){
+//   const context = useContext(AppContext)
+//   return context
+// }
 
 export function AppProvider({children}) {
   const [currentUser, setCurrentUser] = useState(null);
@@ -161,15 +170,15 @@ export function AppProvider({children}) {
     localStorage.setItem("users", JSON.stringify(updated));
   }
 
-  function handleStatusCardClick(filter) {
-    if (activeFilter === filter && filter !== "") {
-      setActiveFilter("");
-    } else {
-      setActiveFilter(filter);
-      setFilterStatus("");
-    }
-    setCurrentPage(1);
-  }
+  // function handleStatusCardClick(filter) {
+  //   if (activeFilter === filter && filter !== "") {
+  //     setActiveFilter("");
+  //   } else {
+  //     setActiveFilter(filter);
+  //     setFilterStatus("");
+  //   }
+  //   setCurrentPage(1);
+  // }
 
   function handleFilterChange(setter) {
     return (value) => {
@@ -508,6 +517,21 @@ export function AppProvider({children}) {
     if (!userId) return null;
     return users.find((user) => user.id === userId)?.name ?? userId;
   }
+  if (authLoading) {
+    return (
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "10px",
+        }}
+      >
+        <Skeleton height={12} count={33} />
+        <Skeleton height={12} count={33} />
+        <Skeleton height={12} count={33} />
+      </div>
+    );
+  }
 
   return (
     <AppContext.Provider
@@ -534,7 +558,7 @@ export function AppProvider({children}) {
         activeFilter,
         currentPage,
         setCurrentPage,
-        handleStatusCardClick,
+
         handleFilterChange,
         setFilterPriority,
         setFilterStatus,
