@@ -93,7 +93,7 @@ export function AppProvider({children}) {
             name: firebaseUser.displayName,
             email: firebaseUser.email,
             photo: firebaseUser.photoURL,
-            role: "agent",
+            role: "user",
           });
         }
       } else {
@@ -516,21 +516,6 @@ export function AppProvider({children}) {
   function getUserName(userId) {
     if (!userId) return null;
     return users.find((user) => user.id === userId)?.name ?? userId;
-  }
-  if (authLoading) {
-    return (
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "10px",
-        }}
-      >
-        <Skeleton height={12} count={33} />
-        <Skeleton height={12} count={33} />
-        <Skeleton height={12} count={33} />
-      </div>
-    );
   }
 
   return (
