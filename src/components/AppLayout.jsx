@@ -11,6 +11,8 @@ export default function AppLayout() {
 
   const {theme, toggleTheme, sidebarOpen, setSidebarOpen} = useGlobal();
 
+  console.log({theme, toggleTheme, sidebarOpen, setSidebarOpen});
+
   return (
     <div className="app-layout">
       {sidebarOpen && (
