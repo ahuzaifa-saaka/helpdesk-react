@@ -2,18 +2,7 @@ import {useForm} from "react-hook-form";
 import {useEffect} from "react";
 import {createPortal} from "react-dom";
 
-const roles = [
-  "Frontend Developer",
-  "Backend Developer",
-  "UI/UX Designer",
-  "DevOps Engineer",
-  "QA Engineer",
-  "Mobile App Developer",
-  "Full Stack Developer",
-  "Product Manager",
-  "Technical Writer",
-  "Support Engineer",
-];
+const roles = ["agent", "user", "admin"];
 
 export default function AddUserModal({onClose, isOpen, onSubmit}) {
   const {
@@ -21,10 +10,10 @@ export default function AddUserModal({onClose, isOpen, onSubmit}) {
     handleSubmit,
     reset,
     formState: {errors},
-  } = useForm({defaultValues: {name: "", role: "", email: ""}});
+  } = useForm({defaultValues: {name: "", email: "", password: "", role: ""}});
 
   useEffect(() => {
-    if (isOpen) reset({name: "", role: "", email: ""});
+    if (isOpen) reset({name: "", email: "", password: "", role: ""});
   }, [isOpen, reset]);
 
   function handleClose() {
@@ -72,6 +61,18 @@ export default function AddUserModal({onClose, isOpen, onSubmit}) {
             placeholder="work@company.com"
             {...register("email", {required: "email is required"})}
             className={errors.email ? "input-error" : "input"}
+          />
+
+          <label htmlFor="user-password">Temporary Password</label>
+          <input
+            type="password"
+            id="u-password"
+            placeholder="Min. 6 characters"
+            {...register("password", {
+              required: "Password is required",
+              minLength: {value: 6, message: "Min. 6 characters"},
+            })}
+            className={errors.password ? "input-error" : "input"}
           />
 
           <label htmlFor="user-role">Role</label>

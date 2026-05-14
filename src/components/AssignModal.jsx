@@ -1,100 +1,3 @@
-// import {useState} from "react";
-// import {useGlobal} from "../context/Appcontext";
-
-// export default function AssignModal({
-//   isOpen,
-//   ticketId,
-//   currentAssignee,
-//   onAssign,
-//   onClose,
-// }) {
-//   const [search, setSearch] = useState("");
-//   const {users} = useGlobal();
-//   if (!isOpen) return null;
-
-//   const searchFiltered = users.filter((user) => {
-//     user.name.toLowerCase().includes(search.toLowerCase) ||
-//       user.role.toLowerCase().includes(search.toLowerCase());
-//   });
-
-//   return (
-//     <div
-//       className="popUp active"
-//       id="assignModal"
-//       onClick={(e) => {
-//         if (e.target.id === "assignModal") onClose();
-//       }}
-//     >
-//       <div
-//         className="form-card"
-//         style={{maxWidth: 360, maxHeight: "80vh", overflowY: "auto"}}
-//       >
-//         <span className="close" id="closeAssignBtn" onClick={onClose}>
-//           &times;
-//         </span>
-//         <h3
-//           style={{textAlign: "center", color: "#4f6ef7", fontWeight: 800}}
-//           className="assign-header"
-//         >
-//           Assign Ticket
-//         </h3>
-//         <p
-//           style={{
-//             color: "var(--text-muted)",
-//             fontSize: 13,
-//             textAlign: "center",
-//             marginBottom: 16,
-//           }}
-//         >
-//           Select a user to assign this ticket to!
-//         </p>
-
-//         <input
-//           type="text"
-//           className="input"
-//           placeholder="Search users..."
-//           value={search}
-//           onChange={(e) => setSearch(e.target.value)}
-//           // style={{paddingLeft: 32, marginBottom: 0}}
-//           // autoFocus
-//         />
-//         <div className="userList" id="userList">
-//           {searchFiltered.map((user) => {
-//             const initials = user.name
-//               .split(" ")
-//               .map((w) => w[0])
-//               .join("")
-//               .slice(0, 2)
-//               .toUpperCase();
-//             const isCurrent = currentAssignee === user.id;
-
-//             return (
-//               <div
-//                 key={user.id}
-//                 className="user-item"
-//                 onClick={() => onAssign(ticketId, user.id, user.name)}
-//               >
-//                 <div className="user-avatar">{initials}</div>
-//                 <div>
-//                   <div className="user-name">
-//                     {user.name}
-//                     {isCurrent && (
-//                       <span style={{color: "var(--assigned)", fontSize: 11}}>
-//                         • current
-//                       </span>
-//                     )}
-//                   </div>
-//                   <div className="user-role">{user.role}</div>
-//                 </div>
-//               </div>
-//             );
-//           })}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
 import {useState, useEffect} from "react";
 import {useGlobal} from "../context/AppContext";
 
@@ -124,8 +27,8 @@ export default function AssignModal({
 
   function handleAssign() {
     if (!selected) return;
-    const user = users.find((u) => u.id === selected);
-    onAssign(ticketId, user.id, user.name);
+    const user = users.find((u) => u.uid === selected);
+    onAssign(ticketId, user.uid, user.name);
   }
 
   return (
@@ -217,14 +120,14 @@ export default function AssignModal({
                 .join("")
                 .slice(0, 2)
                 .toUpperCase();
-              const isCurrent = currentAssignee === user.id;
-              const isSelected = selected === user.id;
+              const isCurrent = currentAssignee === user.uid;
+              const isSelected = selected === user.uid;
 
               return (
                 <div
                   key={user.id}
                   className="user-item"
-                  onClick={() => setSelected(user.id)}
+                  onClick={() => setSelected(user.uid)}
                   style={{
                     border: isSelected
                       ? "1.5px solid #4f6ef7"

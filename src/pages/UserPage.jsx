@@ -3,8 +3,15 @@ import AddUserModal from "../components/AddUserModal";
 import {useGlobal} from "../context/AppContext";
 
 export default function UsersPage() {
-  const {users, ticketItems, addUserOpen, setAddUserOpen, handleAddUser} =
-    useGlobal();
+  const {
+    users,
+    ticketItems,
+    addUserOpen,
+    setAddUserOpen,
+    handleAddUser,
+    handleUpdateUserRole,
+    currentUser,
+  } = useGlobal();
 
   return (
     <div className="users-page">
@@ -34,7 +41,7 @@ export default function UsersPage() {
             .join("")
             .slice(0, 2)
             .toUpperCase();
-          const assigned = ticketItems.filter((t) => t.assignedTo === user.id);
+          const assigned = ticketItems.filter((t) => t.assignedTo === user.uid);
 
           const activeStatuses = assigned
             .filter((t) => !["closed"].includes(t.status))
@@ -44,8 +51,27 @@ export default function UsersPage() {
             }, {});
 
           return (
-            <div className="user-card" key={user.id}>
+            <div className="user-card" key={user.uid}>
               <div className="user-card-header">
+                <div className="user-card-role-change">
+                  <select
+                    className="input"
+                    value={user.role}
+                    onChange={(e) => {
+                      if (user.uid === currentUser?.uid) {
+                        alert("You cannot change your own role.");
+                        return;
+                      }
+                      handleUpdateUserRole(user.uid, e.target.value);
+                    }}
+                    style={{fontSize: 12, padding: "4px 8px", marginTop: 8}}
+                  >
+                    <option value="user">user</option>
+                    <option value="agent">agent</option>
+                    <option value="admin">admin</option>
+                  </select>
+                </div>
+
                 <div className="user-avatar user-card-avatar">{initials}</div>
                 <div className="user-card-info">
                   <div className="user-card-name">{user.name}</div>
@@ -59,7 +85,7 @@ export default function UsersPage() {
               <div className="user-card-tickets-label">
                 {assigned.length === 0
                   ? "No ticket assigned"
-                  : `${assigned.length} ticket${assigned.length > 1 ? "s" : ""}assigned`}
+                  : `${assigned.length} ticket${assigned.length > 1 ? "s" : ""} assigned`}
               </div>
 
               {Object.keys(activeStatuses).length > 0 && (

@@ -1,10 +1,10 @@
 export const USERS = [
-  {id: "a1", name: "Musah Fahad", role: "Frontend Developer"},
-  {id: "a2", name: "Nurudeen Bobby", role: "Backend Developer"},
-  {id: "a3", name: "Efua Asante", role: "UI/UX Designer"},
-  {id: "a4", name: "Joshua Alabi", role: "DevOps Engineer"},
-  {id: "a5", name: "Akosua Adjei", role: "QA Engineer"},
-  {id: "a6", name: "Yaw Ofori", role: "Mobile App Developer"},
+  {id: "a1", name: "Musah Fahad", role: "Default User"},
+  {id: "a2", name: "Nurudeen Bobby", role: "Admin"},
+  {id: "a3", name: "Efua Asante", role: "Agent"},
+  {id: "a4", name: "Joshua Alabi", role: "Default User"},
+  {id: "a5", name: "Akosua Adjei", role: "Admin"},
+  {id: "a6", name: "Yaw Ofori", role: "Agent"},
 ];
 
 export const TRANSITIONS = {

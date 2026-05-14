@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from "react";
-import {getUserName, formatStatus} from "../utils";
+import {formatStatus} from "../utils";
+import {useGlobal} from "../context/AppContext";
 
 export default function TicketRow({
   ticket,
@@ -9,9 +10,12 @@ export default function TicketRow({
   onAssign,
 }) {
   const [showDesc, setShowDesc] = useState(false);
-  const userName = getUserName(ticket.assignedTo);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+
+  const {currentUser, getUserName} = useGlobal();
+  const role = currentUser?.role;
+  const userName = getUserName(ticket.assignedTo);
 
   // function handleRowClick(e) {
   //   if (
@@ -49,26 +53,30 @@ export default function TicketRow({
       icon: "visibility",
       cls: "dots-item-view",
       fn: () => onView(ticket.id),
+      roles: ["admin", "agent", "user"],
     },
     {
       label: "Edit Ticket",
       icon: "edit",
       cls: "dots-item-edit",
       fn: () => onEdit(ticket.id),
+      roles: ["admin", "agent"],
     },
     {
       label: "Assign / Transiton",
       icon: "assignment_ind",
       cls: "dots-item-assign",
       fn: () => onAssign(ticket.id),
+      roles: ["admin", "agent"],
     },
     {
       label: "Delete",
       icon: "delete",
       cls: "dots-item-delete",
       fn: () => onDelete(ticket.id),
+      roles: ["admin"],
     },
-  ];
+  ].filter((action) => action.roles.includes(role));
 
   return (
     <>

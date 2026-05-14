@@ -1,47 +1,29 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {formatStatus} from "../utils";
-import {USERS, TICKET_PER_PAGE, TRANSITIONS} from "../constants";
+import {TICKET_PER_PAGE, TRANSITIONS} from "../constants";
 import {showToast} from "../components/Toast";
-// import {useLocalStorageState} from "../hooks/useLocalStorageState";
-import {Oval} from "react-loader-spinner";
+import Spinner from "../components/Spinner";
 
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
-
-import {onAuthStateChanged} from "firebase/auth";
 import {
-  collection,
-  doc,
-  getDocs,
-  getDoc,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  query,
-  orderBy,
-} from "firebase/firestore";
-import {auth, db} from "../firebase";
-import {
-  loginWithGoogle,
   loginWithEmail,
   signUpWithEmail,
   logoutUser,
+  getCurrentSession,
+  getAllUsers,
+  updateUserRole,
 } from "../services/authService";
-import Spinner from "../components/Spinner";
+
+const TICKETS_KEY = "hd_tickets";
 
 const AppContext = createContext();
 
 export const useGlobal = () => useContext(AppContext);
 
-// function useGlobal (){
-//   const context = useContext(AppContext)
-//   return context
-// }
-
 export function AppProvider({children}) {
   const [currentUser, setCurrentUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
-  //  Modal states
+
+  // Modal states
   const [formOpen, setFormOpen] = useState(false);
   const [editTicket, setEditTicket] = useState(null);
 
@@ -59,11 +41,14 @@ export function AppProvider({children}) {
 
   const [addUserOpen, setAddUserOpen] = useState(false);
 
-  // firebase
+  // Tickets
   const [ticketItems, setTicketItems] = useState([]);
-  const [ticketsLoading, setTicketsLoading] = useState(true);
+  const [ticketsLoading, setTicketsLoading] = useState(false);
 
-  //  Filters & search
+  // Users
+  const [users, setUsers] = useState(() => getAllUsers());
+
+  // Filters & search
   const [searchValue, setSearchValue] = useState("");
   const [filterPriority, setFilterPriority] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -71,113 +56,67 @@ export function AppProvider({children}) {
   const [activeFilter, setActiveFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [theme, setTheme] = useState(
     () => localStorage.getItem("theme") || "dark",
   );
 
+  // Theme effect
   useEffect(() => {
     document.body.classList.toggle("light-mode", theme === "light");
     localStorage.setItem("theme", theme);
   }, [theme]);
 
+  // Restore session on load
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        const userSnap = await getDoc(doc(db, "users", firebaseUser.uid));
-        if (userSnap.exists()) {
-          setCurrentUser({uid: firebaseUser.uid, ...userSnap.data()});
-        } else {
-          setCurrentUser({
-            uid: firebaseUser.uid,
-            name: firebaseUser.displayName,
-            email: firebaseUser.email,
-            photo: firebaseUser.photoURL,
-            role: "user",
-          });
-        }
-      } else {
-        setCurrentUser(null);
-      }
-      setAuthLoading(false);
-    });
-    return unsub;
+    const session = getCurrentSession();
+    setCurrentUser(session);
+    setAuthLoading(false);
   }, []);
 
+  // Load tickets from localStorage
   useEffect(() => {
-    async function fetchTickets() {
-      try {
-        const q = query(
-          collection(db, "tickets"),
-          orderBy("createdAt", "desc"),
-        );
-        const snapshot = await getDocs(q);
-        const data = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
-        setTicketItems(data);
-      } catch (err) {
-        console.error("Failed to fetch tickets:", err);
-      } finally {
-        setTicketsLoading(false);
-      }
-    }
-    fetchTickets();
+    const stored = JSON.parse(localStorage.getItem(TICKETS_KEY) || "[]");
+    setTicketItems(stored);
   }, []);
+
+  // Load users from localStorage
+  // useEffect(() => {
+  //   setUsers(getAllUsers());
+  // }, []);
 
   function toggleTheme() {
     setTheme((t) => (t === "light" ? "dark" : "light"));
   }
 
-  // const [ticketItems, setTicketItems] = useState(
-  //   () => JSON.parse(localStorage.getItem("ticketItems")) || [],
-  // );
-
-  // const [ticketItems, setTicketItems] = useLocalStorageState("ticketItems", []);
-
-  const [users, setUser] = useState(
-    () => JSON.parse(localStorage.getItem("users")) || USERS,
-  );
-
-  async function handleGoogleLogin() {
-    const user = await loginWithGoogle();
-    setCurrentUser(user);
-    return user;
+  function saveTickets(updated) {
+    setTicketItems(updated);
+    localStorage.setItem(TICKETS_KEY, JSON.stringify(updated));
   }
 
+  function refreshUsers() {
+    setUsers(getAllUsers());
+  }
+
+  // Auth handlers
   async function handleEmailLogin(email, password) {
-    const user = await loginWithEmail(email, password);
+    const user = loginWithEmail(email, password);
     setCurrentUser(user);
     return user;
   }
 
   async function handleEmailSignUp(name, email, password) {
-    const user = await signUpWithEmail(name, email, password);
+    const user = signUpWithEmail(name, email, password);
     setCurrentUser(user);
+    refreshUsers();
     return user;
   }
 
   async function handleLogout() {
-    await logoutUser();
+    logoutUser();
     setCurrentUser(null);
   }
-
-  // function saveTickets(updated) {
-  //   setTicketItems(updated);
-  //   localStorage.setItem("ticketItems", JSON.stringify(updated));
-  // }
-
-  function saveUsers(updated) {
-    setUser(updated);
-    localStorage.setItem("users", JSON.stringify(updated));
-  }
-
-  // function handleStatusCardClick(filter) {
-  //   if (activeFilter === filter && filter !== "") {
-  //     setActiveFilter("");
-  //   } else {
-  //     setActiveFilter(filter);
-  //     setFilterStatus("");
-  //   }
-  //   setCurrentPage(1);
-  // }
 
   function handleFilterChange(setter) {
     return (value) => {
@@ -187,75 +126,13 @@ export function AppProvider({children}) {
     };
   }
 
-  //  Derived filtered + paginated list
-  const effectiveStatus = filterStatus || activeFilter;
-
-  const filtered = ticketItems.filter((ticket) => {
-    const sv = searchValue.toLowerCase();
-    return (
-      (!filterPriority || ticket.priority === filterPriority) &&
-      (!effectiveStatus || ticket.status === effectiveStatus) &&
-      (!filterAssignee || ticket.assignedTo === filterAssignee) &&
-      (ticket.title.toLowerCase().includes(sv) ||
-        ticket.email.toLowerCase().includes(sv) ||
-        ticket.description.toLowerCase().includes(sv))
-    );
-  });
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / TICKET_PER_PAGE));
-  const safePage = Math.min(currentPage, totalPages);
-  const paginated = filtered.slice(
-    (safePage - 1) * TICKET_PER_PAGE,
-    safePage * TICKET_PER_PAGE,
-  );
-
-  //  Keyboard ESC
-  useEffect(() => {
-    function onKey(e) {
-      if (e.key === "Escape") {
-        setFormOpen(false);
-        setDeleteOpen(false);
-      }
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, []);
-
-  //  Form submit (create / edit)
-  // function handleFormSubmit(formData) {
-  //   if (editTicket) {
-  //     const updated = ticketItems.map((t) =>
-  //       t.id === editTicket.id ? {...t, ...formData} : t,
-  //     );
-  //     saveTickets(updated);
-  //     showToast("Ticket updated.", "success");
-  //   } else {
-  //     const newTicket = {
-  //       id: Date.now(),
-  //       ...formData,
-  //       status: "open",
-  //       createdAt: new Date().toLocaleDateString(),
-  //       assignedTo: null,
-  //       assignedAt: null,
-  //       comments: [],
-  //     };
-  //     saveTickets([newTicket, ...ticketItems]);
-  //     showToast("New ticket created.", "success");
-  //   }
-  //   setCurrentPage(1);
-  //   setFormOpen(false);
-  //   setEditTicket(null);
-
-  // }
-
-  function getNextTicketNumber(ticketItems) {
-    if (!ticketItems || ticketItems.length === 0) return 1;
-
-    const numbers = ticketItems.map((t) => {
+  // Ticket helpers
+  function getNextTicketNumber(items) {
+    if (!items || items.length === 0) return 1;
+    const numbers = items.map((t) => {
       const match = t.ticketId?.match(/\d+/);
       return match ? parseInt(match[0], 10) : 0;
     });
-
     return Math.max(...numbers) + 1;
   }
 
@@ -263,30 +140,29 @@ export function AppProvider({children}) {
     return `TIC-${String(num).padStart(3, "0")}`;
   }
 
-  async function handleFormSubmit(formData) {
+  // Form submit (create / edit)
+  function handleFormSubmit(formData) {
     if (editTicket) {
-      // UPDATE
-      const ref = doc(db, "tickets", editTicket.id);
-      await updateDoc(ref, {...formData});
-      setTicketItems((prev) =>
-        prev.map((t) => (t.id === editTicket.id ? {...t, ...formData} : t)),
+      const updated = ticketItems.map((t) =>
+        t.id === editTicket.id ? {...t, ...formData} : t,
       );
+      saveTickets(updated);
       showToast("Ticket updated.", "success");
     } else {
-      // CREATE
-      const ticketNumber = getNextTicketNumber();
+      const ticketNumber = getNextTicketNumber(ticketItems);
       const newTicket = {
+        id: `t-${Date.now()}`,
         ticketId: formatTicketId(ticketNumber),
-        // ticketId: Date.now(),
         ...formData,
+        createdBy: currentUser?.uid || null,
+        createdByEmail: currentUser?.email || null,
         status: "open",
         createdAt: new Date().toLocaleDateString(),
         assignedTo: null,
         assignedAt: null,
         comments: [],
       };
-      const docRef = await addDoc(collection(db, "tickets"), newTicket);
-      setTicketItems((prev) => [{id: docRef.id, ...newTicket}, ...prev]);
+      saveTickets([newTicket, ...ticketItems]);
       showToast("New ticket created.", "success");
     }
     setCurrentPage(1);
@@ -301,79 +177,35 @@ export function AppProvider({children}) {
     setFormOpen(true);
   }
 
-  //  Delete
+  // Delete
   function openDeleteModal(id) {
     setPendingDeleteId(id);
     setDeleteOpen(true);
   }
 
-  // function handleDeleteConfirm(enteredId) {
-  //   if (enteredId !== pendingDeleteId) {
-  //     showToast("Enter a valid ID", "error");
-  //     return;
-  //   }
-  //   saveTickets(ticketItems.filter((t) => t.id !== pendingDeleteId));
-  //   showToast("Ticket deleted", "success");
-  //   setDeleteOpen(false);
-  //   setPendingDeleteId(null);
-  // }
-
-  async function handleDeleteConfirm(enteredId) {
+  function handleDeleteConfirm(enteredId) {
     const ticket = ticketItems.find((t) => t.id === pendingDeleteId);
     if (!ticket) return;
-
     if (enteredId !== ticket.ticketId && enteredId !== ticket.id) {
       showToast("Enter a valid ID", "error");
       return;
     }
-    await deleteDoc(doc(db, "tickets", pendingDeleteId));
-    setTicketItems((prev) => prev.filter((t) => t.id !== pendingDeleteId));
+    saveTickets(ticketItems.filter((t) => t.id !== pendingDeleteId));
     showToast("Ticket deleted", "success");
     setDeleteOpen(false);
     setPendingDeleteId(null);
   }
 
-  //  Detail view
+  // Detail view
   function openTicketDetail(id) {
     setActiveDetailId(id);
     setDetailOpen(true);
   }
 
-  //  Transitions
-
-  // function handleTransition(id, newStatus) {
-  //   const ticket = ticketItems.find((t) => t.id === id);
-  //   if (!ticket) return;
-
-  //   if (!ticket.assignedTo) {
-  //     showToast("Assign the ticket to a user first.", "error");
-  //     return;
-  //   }
-
-  //   const allowed = TRANSITIONS[ticket.status] || [];
-  //   if (!allowed.includes(newStatus)) {
-  //     showToast(
-  //       `Cannot move from "${formatStatus(ticket.status)}" to "${formatStatus(newStatus)}".`,
-  //       "error",
-  //     );
-  //     return;
-  //   }
-  //   if (newStatus === "in-progress" && !ticket.assignedTo) {
-  //     showToast("Assign the ticket to a user before starting work.", "error");
-  //     return;
-  //   }
-
-  //   const updated = ticketItems.map((t) =>
-  //     t.id === id ? {...t, status: newStatus} : t,
-  //   );
-  //   saveTickets(updated);
-  //   showToast(`Ticket moved to "${formatStatus(newStatus)}".`, "success");
-  // }
-
-  async function handleTransition(id, newStatus) {
+  // Transitions
+  function handleTransition(id, newStatus) {
     const ticket = ticketItems.find((t) => t.id === id);
     if (!ticket) return;
-
     if (!ticket.assignedTo) {
       showToast("Assign the ticket to a user first.", "error");
       return;
@@ -386,122 +218,137 @@ export function AppProvider({children}) {
       );
       return;
     }
-    await updateDoc(doc(db, "tickets", id), {status: newStatus});
-    setTicketItems((prev) =>
-      prev.map((t) => (t.id === id ? {...t, status: newStatus} : t)),
+    const updated = ticketItems.map((t) =>
+      t.id === id ? {...t, status: newStatus} : t,
     );
+    saveTickets(updated);
     showToast(`Ticket moved to "${formatStatus(newStatus)}".`, "success");
   }
 
-  //  Assign
+  // Assign
   function openAssignModal(id) {
     setPendingAssignId(id);
     setAssignOpen(true);
   }
 
-  // function handleAssign(id, userId, userName) {
-  //   const updated = ticketItems.map((t) =>
-  //     t.id === id
-  //       ? {
-  //           ...t,
-  //           assignedTo: userId,
-  //           assignedAt: new Date().toLocaleString(),
-  //           status: "assigned",
-  //         }
-  //       : t,
-  //   );
-  //   saveTickets(updated);
-  //   showToast(`Ticket assigned to ${userName}.`, "success");
-  //   setAssignOpen(false);
-  //   setPendingAssignId(null);
-  // }
-
-  async function handleAssign(id, userId, userName) {
+  function handleAssign(id, userId, userName) {
     const updates = {
       assignedTo: userId,
       assignedAt: new Date().toLocaleString(),
       status: "assigned",
     };
-    await updateDoc(doc(db, "tickets", id), updates);
-    setTicketItems((prev) =>
-      prev.map((t) => (t.id === id ? {...t, ...updates} : t)),
+    const updated = ticketItems.map((t) =>
+      t.id === id ? {...t, ...updates} : t,
     );
+    saveTickets(updated);
     showToast(`Ticket assigned to ${userName}.`, "success");
     setAssignOpen(false);
     setPendingAssignId(null);
   }
 
-  //  Comments
+  // Comments
   function openCommentModal(id) {
     setPendingCommentId(id);
     setCommentOpen(true);
   }
 
-  // function handleCommentSubmit(author, message) {
-  //   if (!author || !message) {
-  //     showToast("Please fill in both name and message.", "error");
-  //     return;
-  //   }
-  //   const updated = ticketItems.map((t) =>
-  //     t.id === pendingCommentId
-  //       ? {
-  //           ...t,
-  //           comments: [
-  //             ...(t.comments || []),
-  //             {author, message, createdAt: new Date().toLocaleString()},
-  //           ],
-  //         }
-  //       : t,
-  //   );
-  //   saveTickets(updated);
-  //   showToast("Comment added.", "success");
-  //   setCommentOpen(false);
-  //   setPendingCommentId(null);
-  // }
-
-  async function handleCommentSubmit(author, message) {
+  function handleCommentSubmit(author, message) {
     if (!author || !message) {
       showToast("Please fill in both name and message.", "error");
       return;
     }
-    const ticket = ticketItems.find((t) => t.id === pendingCommentId);
-    if (!ticket) return;
-
     const newComment = {
       author,
       message,
       createdAt: new Date().toLocaleString(),
     };
-    const updatedComments = [...(ticket.comments || []), newComment];
-
-    await updateDoc(doc(db, "tickets", pendingCommentId), {
-      comments: updatedComments,
-    });
-    setTicketItems((prev) =>
-      prev.map((t) =>
-        t.id === pendingCommentId ? {...t, comments: updatedComments} : t,
-      ),
+    const updated = ticketItems.map((t) =>
+      t.id === pendingCommentId
+        ? {...t, comments: [...(t.comments || []), newComment]}
+        : t,
     );
+    saveTickets(updated);
     showToast("Comment added.", "success");
     setCommentOpen(false);
     setPendingCommentId(null);
   }
 
-  // Add user
-
+  // Add user (admin only)
+  // ✅ CORRECT — actually saves to localStorage via authService
   function handleAddUser(userData) {
-    const newUser = {
-      id: `u-${Date.now()}`,
-      name: userData.name,
-      role: userData.role,
-      email: userData.email,
-    };
-    saveUsers([...users, newUser]);
-    showToast(`User "${userData.name}" added to the team`, "success");
-    setAddUserOpen(false);
+    try {
+      signUpWithEmail(userData.name, userData.email, userData.password);
+      // Override role since signUpWithEmail defaults to "user"
+      const allUsers = JSON.parse(localStorage.getItem("hd_users") || "[]");
+      const updated = allUsers.map((u) =>
+        u.email === userData.email ? {...u, role: userData.role} : u,
+      );
+      localStorage.setItem("hd_users", JSON.stringify(updated));
+      refreshUsers();
+      showToast(`User "${userData.name}" added to the team`, "success");
+      setAddUserOpen(false);
+    } catch (err) {
+      showToast(
+        err.code === "auth/email-already-in-use"
+          ? "A user with this email already exists."
+          : "Failed to add user.",
+        "error",
+      );
+    }
   }
 
-  //  Derived data for modals
+  // Role update (admin only)
+  function handleUpdateUserRole(uid, newRole) {
+    updateUserRole(uid, newRole);
+    refreshUsers();
+    showToast("User role updated.", "success");
+  }
+
+  function getUserName(userId) {
+    if (!userId) return null;
+    return users.find((u) => u.uid === userId)?.name ?? userId;
+  }
+
+  // Derived: filter tickets by role
+  const effectiveStatus = filterStatus || activeFilter;
+
+  const filtered = ticketItems.filter((ticket) => {
+    // user role: only see their own tickets
+    if (currentUser?.role === "user") {
+      if (ticket.createdByEmail !== currentUser.email) return false;
+    }
+
+    const sv = searchValue.toLowerCase();
+    return (
+      (!filterPriority || ticket.priority === filterPriority) &&
+      (!effectiveStatus || ticket.status === effectiveStatus) &&
+      (!filterAssignee || ticket.assignedTo === filterAssignee) &&
+      (ticket.title?.toLowerCase().includes(sv) ||
+        ticket.email?.toLowerCase().includes(sv) ||
+        ticket.description?.toLowerCase().includes(sv))
+    );
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / TICKET_PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginated = filtered.slice(
+    (safePage - 1) * TICKET_PER_PAGE,
+    safePage * TICKET_PER_PAGE,
+  );
+
+  // Keyboard ESC
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === "Escape") {
+        setFormOpen(false);
+        setDeleteOpen(false);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Derived modal data
   const activeDetailTicket =
     ticketItems.find((t) => t.id === activeDetailId) || null;
   const pendingDeleteTicket =
@@ -509,13 +356,7 @@ export function AppProvider({children}) {
   const pendingAssignTicket =
     ticketItems.find((t) => t.id === pendingAssignId) || null;
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  // const [activePage, setActivePage] = useState("dashboard");
-
-  function getUserName(userId) {
-    if (!userId) return null;
-    return users.find((user) => user.id === userId)?.name ?? userId;
-  }
+  if (authLoading) return <Spinner />;
 
   return (
     <AppContext.Provider
@@ -526,13 +367,14 @@ export function AppProvider({children}) {
         // sidebar
         sidebarOpen,
         setSidebarOpen,
-        // tickets & users data
+        // tickets & users
         ticketItems,
         users,
         filtered,
         paginated,
         safePage,
         totalPages,
+        ticketsLoading,
         // search & filters
         searchValue,
         setSearchValue,
@@ -542,7 +384,6 @@ export function AppProvider({children}) {
         activeFilter,
         currentPage,
         setCurrentPage,
-
         handleFilterChange,
         setFilterPriority,
         setFilterStatus,
@@ -559,6 +400,7 @@ export function AppProvider({children}) {
         openCommentModal,
         handleCommentSubmit,
         handleAddUser,
+        handleUpdateUserRole,
         getUserName,
         // modal states
         formOpen,
@@ -580,20 +422,17 @@ export function AppProvider({children}) {
         activeDetailTicket,
         pendingDeleteTicket,
         pendingAssignTicket,
-
-        // activePage,
-        // setActivePage,
-
         setActiveDetailId,
         activeDetailId,
         setPendingAssignId,
         setPendingCommentId,
         setPendingDeleteId,
-
+        // auth
         currentUser,
         isLoggedIn: !!currentUser,
         isAdmin: currentUser?.role === "admin",
-        handleGoogleLogin,
+        isAgent: currentUser?.role === "agent",
+        isUser: currentUser?.role === "user",
         handleEmailLogin,
         handleEmailSignUp,
         handleLogout,

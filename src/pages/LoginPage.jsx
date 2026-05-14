@@ -5,7 +5,7 @@ import {useGlobal} from "../context/AppContext";
 import styles from "./LoginPage.module.css";
 
 export default function LoginPage() {
-  const {handleGoogleLogin, handleEmailLogin, handleEmailSignUp} = useGlobal();
+  const {handleEmailLogin, handleEmailSignUp} = useGlobal();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("signin");
@@ -29,19 +29,6 @@ export default function LoginPage() {
   function switchTab(t) {
     clearForm();
     setActiveTab(t);
-  }
-
-  async function handleGoogle() {
-    setError("");
-    setIsLoading(true);
-    try {
-      await handleGoogleLogin();
-      navigate("/dashboard");
-    } catch {
-      setError("Google sign-in failed. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
   }
 
   async function handleSignIn(e) {
@@ -217,24 +204,6 @@ export default function LoginPage() {
               >
                 {isLoading ? "Signing in…" : "Login"}
               </button>
-
-              <div className={styles.divider}>
-                <span />
-                <p>Or continue with</p>
-                <span />
-              </div>
-
-              <div className={styles.socialRow}>
-                <button
-                  type="button"
-                  className={styles.googleBtn}
-                  onClick={handleGoogle}
-                  disabled={isLoading}
-                >
-                  <GoogleSVG />
-                  Google
-                </button>
-              </div>
             </form>
           )}
 
@@ -314,24 +283,6 @@ export default function LoginPage() {
               >
                 {isLoading ? "Creating account…" : "Create Account"}
               </button>
-
-              <div className={styles.divider}>
-                <span />
-                <p>Or continue with</p>
-                <span />
-              </div>
-
-              <div className={styles.socialRow}>
-                <button
-                  type="button"
-                  className={styles.googleBtn}
-                  onClick={handleGoogle}
-                  disabled={isLoading}
-                >
-                  <GoogleSVG />
-                  Google
-                </button>
-              </div>
             </form>
           )}
 
@@ -441,25 +392,5 @@ const EyeOffIcon = () => (
     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
     <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
     <line x1="1" y1="1" x2="23" y2="23" />
-  </svg>
-);
-const GoogleSVG = () => (
-  <svg width="18" height="18" viewBox="0 0 48 48" style={{flexShrink: 0}}>
-    <path
-      fill="#EA4335"
-      d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.7 2.5 30.2 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.8 6C12.3 13 17.7 9.5 24 9.5z"
-    />
-    <path
-      fill="#4285F4"
-      d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 6.9-10 6.9-17z"
-    />
-    <path
-      fill="#FBBC05"
-      d="M10.4 28.7A14.6 14.6 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.8-6A23.9 23.9 0 0 0 0 24c0 3.8.9 7.5 2.6 10.7l7.8-6z"
-    />
-    <path
-      fill="#34A853"
-      d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.2-7.7 2.2-6.3 0-11.6-4.2-13.6-9.9l-7.8 6C6.6 42.6 14.6 48 24 48z"
-    />
   </svg>
 );

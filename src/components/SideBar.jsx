@@ -6,8 +6,13 @@ const nav_item = [
 ];
 
 export default function SideBar({activePage, onNavigate, isOpen}) {
-  const {users, ticketItems, theme, toggleTheme} = useGlobal();
+  const {users, ticketItems, theme, toggleTheme, currentUser} = useGlobal();
   const totalCount = ticketItems.length;
+
+  const visibleNavItems = nav_item.filter((item) => {
+    if (item.id === "users") return currentUser?.role === "admin";
+    return true;
+  });
 
   return (
     <aside className={`sidebar${isOpen ? " sidebar-open" : ""}`}>
@@ -18,7 +23,7 @@ export default function SideBar({activePage, onNavigate, isOpen}) {
 
       <nav className="sidebar-nav">
         <p className="sidebar-section-label">Main Menu</p>
-        {nav_item.map((item) => (
+        {visibleNavItems.map((item) => (
           <button
             key={item.id}
             className={`sidebar-nav-item${activePage === item.id ? " active" : ""}`}
