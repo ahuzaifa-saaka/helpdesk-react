@@ -1,7 +1,7 @@
 import {formatStatus} from "../utils";
 import AddUserModal from "../components/AddUserModal";
 import {useGlobal} from "../context/AppContext";
-
+import styles from "./UserPage.module.css";
 export default function UsersPage() {
   const {
     users,
@@ -14,15 +14,20 @@ export default function UsersPage() {
   } = useGlobal();
 
   return (
-    <div className="users-page">
-      <div className="dashboard-text">
+    <div className={styles.usersPage}>
+      <div className={styles.dashboardText}>
         <h3>Users</h3>
       </div>
 
-      <div className="users-page-header">
-        <p className="users-page-subtitle">{users.length} users Available</p>
+      <div className={styles.usersPageHeader}>
+        <p className={styles.usersPageSubtitle}>
+          {users.length} users Available
+        </p>
 
-        <button className="new-ticket-btn" onClick={() => setAddUserOpen(true)}>
+        <button
+          className={styles.newTicketBtn}
+          onClick={() => setAddUserOpen(true)}
+        >
           <span
             className="material-icons"
             style={{fontSize: 16, verticalAlign: "middle", marginRight: 4}}
@@ -33,7 +38,7 @@ export default function UsersPage() {
         </button>
       </div>
 
-      <div className="users-grid">
+      <div className={styles.usersGrid}>
         {users.map((user) => {
           const initials = user.name
             .split(" ")
@@ -41,6 +46,7 @@ export default function UsersPage() {
             .join("")
             .slice(0, 2)
             .toUpperCase();
+
           const assigned = ticketItems.filter((t) => t.assignedTo === user.uid);
 
           const activeStatuses = assigned
@@ -51,11 +57,10 @@ export default function UsersPage() {
             }, {});
 
           return (
-            <div className="user-card" key={user.uid}>
-              <div className="user-card-header">
-                <div className="user-card-role-change">
+            <div className={styles.userCard} key={user.uid}>
+              <div className={styles.userCardHeader}>
+                <div className={styles.userCardRoleChange}>
                   <select
-                    className="input"
                     value={user.role}
                     onChange={(e) => {
                       if (user.uid === currentUser?.uid) {
@@ -64,7 +69,6 @@ export default function UsersPage() {
                       }
                       handleUpdateUserRole(user.uid, e.target.value);
                     }}
-                    style={{fontSize: 12, padding: "4px 8px", marginTop: 8}}
                   >
                     <option value="user">user</option>
                     <option value="agent">agent</option>
@@ -72,29 +76,33 @@ export default function UsersPage() {
                   </select>
                 </div>
 
-                <div className="user-avatar user-card-avatar">{initials}</div>
-                <div className="user-card-info">
-                  <div className="user-card-name">{user.name}</div>
-                  <div className="user-card-role">{user.role}</div>
+                <div
+                  className={`${styles.userAvatar} ${styles.userCardAvatar}`}
+                >
+                  {initials}
+                </div>
+
+                <div className={styles.userCardInfo}>
+                  <div className={styles.userCardName}>{user.name}</div>
+                  <div className={styles.userCardRole}>{user.role}</div>
                   {user.email && (
-                    <div className="user-card-email">{user.email}</div>
+                    <div className={styles.userCardEmail}>{user.email}</div>
                   )}
                 </div>
               </div>
 
-              <div className="user-card-tickets-label">
+              <div className={styles.userCardTicketsLabel}>
                 {assigned.length === 0
                   ? "No ticket assigned"
                   : `${assigned.length} ticket${assigned.length > 1 ? "s" : ""} assigned`}
               </div>
 
               {Object.keys(activeStatuses).length > 0 && (
-                <div className="user-card-breakdown">
+                <div className={styles.userCardBreakdown}>
                   {Object.entries(activeStatuses).map(([status, count]) => (
                     <span
                       key={status}
-                      className={`status ${status}`}
-                      style={{fontSize: 10, padding: "2px 8px"}}
+                      className={`${styles.status} ${styles[status] ?? ""}`}
                     >
                       {count} {formatStatus(status)}
                     </span>

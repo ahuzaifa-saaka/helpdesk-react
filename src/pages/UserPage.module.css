@@ -1,0 +1,238 @@
+/* ─────────────────────────────────────────────
+   UsersPage.module.css
+───────────────────────────────────────────── */
+
+/* Page wrapper */
+.usersPage {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Page title */
+.dashboardText h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary, #1a1a2e);
+}
+
+/* Header row: subtitle + button */
+.usersPageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.usersPageSubtitle {
+  font-size: 14px;
+  color: var(--text-muted, #6b7280);
+  margin: 0;
+}
+
+/* Add User button */
+.newTicketBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent, #4f46e5);
+  color: #fff;
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    transform 0.12s;
+}
+
+.newTicketBtn:hover {
+  background: var(--accent-hover, #4338ca);
+  transform: translateY(-1px);
+}
+
+.newTicketBtn:active {
+  transform: translateY(0);
+}
+
+/* ─── User Grid ───────────────────────────── */
+.usersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* ─── User Card ───────────────────────────── */
+.userCard {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow 0.2s,
+    transform 0.15s;
+}
+
+.userCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Card header: avatar + info + role select */
+.userCardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+/* Role select — pushed to top-right */
+.userCardRoleChange {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.userCardRoleChange select {
+  font-size: 12px;
+  padding: 4px 8px;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 6px;
+  background: var(--input-bg, #f9fafb);
+  color: var(--text-primary, #1a1a2e);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.userCardRoleChange select:focus {
+  border-color: var(--accent, #4f46e5);
+}
+
+/* Avatar circle */
+.userAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent, #4f46e5);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+.userCardAvatar {
+  /* alias — keep for compatibility with the className combo in JSX */
+}
+
+/* Name / role / email */
+.userCardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 64px; /* clear the role select */
+}
+
+.userCardName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a2e);
+  line-height: 1.3;
+}
+
+.userCardRole {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent, #4f46e5);
+  text-transform: capitalize;
+}
+
+.userCardEmail {
+  font-size: 11px;
+  color: var(--text-muted, #6b7280);
+  word-break: break-all;
+}
+
+/* Ticket count label */
+.userCardTicketsLabel {
+  font-size: 12px;
+  color: var(--text-muted, #6b7280);
+  padding-top: 4px;
+  border-top: 1px solid var(--border, #e5e7eb);
+}
+
+/* Status badge breakdown */
+.userCardBreakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ─── Status badge base ───────────────────── */
+/* These mirror your existing global .status classes.
+   Add them here if you're not using a global stylesheet. */
+.status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+/* Status variants — extend as needed */
+.status.open {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+}
+
+.status.in_progress,
+.status.inProgress {
+  background: rgba(234, 179, 8, 0.14);
+  color: #b45309;
+}
+
+.status.resolved {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+
+.status.closed {
+  background: rgba(107, 114, 128, 0.12);
+  color: #4b5563;
+}
+
+.status.pending {
+  background: rgba(249, 115, 22, 0.12);
+  color: #c2410c;
+}
+
+/* ─── Responsive ──────────────────────────── */
+@media (max-width: 600px) {
+  .usersPage {
+    padding: 16px;
+  }
+
+  .usersGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .usersPageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
