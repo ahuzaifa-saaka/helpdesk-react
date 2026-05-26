@@ -5,6 +5,7 @@ import styles from "./Header.module.css";
 
 export default function Header({onMenuToggle}) {
   const {currentUser, handleLogout, theme, toggleTheme} = useGlobal();
+
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const avatarRef = useRef(null);
